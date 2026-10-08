@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAINS HERO QUEST 2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: #0b071e;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        /* Screen States */
+        #login-screen { display: block; text-align: center; }
+        #game-screen { display: none; }
+        #result-screen { display: none; text-align: center; }
+
+        .title-badge {
+            background: #ff007f;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .app-title {
+            font-size: 2.2rem;
+            color: #00f2fe;
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #00f2fe;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: linear-gradient(45deg, #ff007f, #ff5e7e);
+            border: none;
+            padding: 16px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .btn-main:hover {
+            opacity: 0.9;
+        }
+
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.4);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .progress-bar-bg {
+            background: rgba(255,255,255,0.1);
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            background: #00f2fe;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-box {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 14px;
+            border-left: 5px solid #00f2fe;
+            margin-bottom: 15px;
+        }
+
+        .tp-tag {
+            color: #ffd200;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .svg-card {
+            background: #110c2a;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid rgba(0,242,254,0.3);
+            text-align: center;
+        }
+
+        .svg-card svg {
+            max-width: 100%;
+            height: auto;
+            max-height: 180px;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-opt {
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.2);
+            padding: 14px;
+            border-radius: 10px;
+            color: #fff;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-opt:hover {
+            border-color: #00f2fe;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-opt.correct { background: rgba(0,230,118,0.4) !important; border-color: #00e676 !important; }
+        .btn-opt.wrong { background: rgba(255,61,0,0.4) !important; border-color: #ff3d00 !important; }
+
+        .opt-num {
+            background: rgba(255,255,255,0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00f2fe;
+            flex-shrink: 0;
+        }
+
+        .hint-btn {
+            background: rgba(255,210,0,0.2);
+            border: 1px solid #ffd200;
+            color: #ffd200;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .hint-box {
+            background: rgba(255,210,0,0.15);
+            border: 1px solid #ffd200;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        
+        <!-- 1. SKRIN UTAMA -->
+        <div id="login-screen">
+            <span class="title-badge">PERCUBAAN SPM 2026 PAHANG</span>
+            <h1 class="app-title">SAINS HERO QUEST</h1>
+            <p style="color: #cbd5e1; font-size: 0.95rem;">Misi 40 Soalan Sains Kertas 1 Beserta Gambar Rajah</p>
+
+            <div class="input-group">
+                <input type="text" id="player-name" placeholder="Masukkan Nama Hero Anda..." maxlength="20" autocomplete="off">
+            </div>
+
+            <button type="button" class="btn-main" id="btn-start-game">
+                MULA TEROKA (40 SOALAN) 🚀
+            </button>
+        </div>
+
+        <!-- 2. SKRIN SOALAN -->
+        <div id="game-screen">
+            <div class="hud-header">
+                <div>👤 <span id="hud-name" style="color: #00f2fe;">Hero</span></div>
+                <div>❤️ <span id="hud-lives" style="color: #ff3d00;">5</span> | ⭐ <span id="hud-score" style="color: #ffd200;">0</span></div>
+            </div>
+
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">
+                <span id="question-count">Soalan 1 / 40</span>
+                <span id="tp-level-indicator">Tahap: TP1</span>
+            </div>
+
+            <div class="question-box">
+                <div class="tp-tag" id="tp-tag">TP1 - FAKTA ASAS</div>
+                <div class="question-text" id="question-text">Loading...</div>
+                
+                <div class="svg-card">
+                    <div id="svg-content"></div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 5px;" id="graphic-caption">Rajah</div>
+                </div>
+            </div>
+
+            <div class="options-grid" id="options-container"></div>
+
+            <div>
+                <button type="button" class="hint-btn" id="btn-hint">💡 Petunjuk Hero</button>
+            </div>
+            <div id="hint-box" class="hint-box">
+                ℹ️ <span id="hint-text">Bantuan tips...</span>
+            </div>
+        </div>
+
+        <!-- 3. SKRIN KEPUTUSAN -->
+        <div id="result-screen">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🏆</div>
+            <h2>TAHNIAH, <span id="result-name" style="color: #00f2fe;">HERO</span>!</h2>
+            <p style="color: #cbd5e1; margin-top: 5px;">Misi 40 Soalan Sains Telah Selesai!</p>
+
+            <div style="background: rgba(0,0,0,0.4); border-radius: 14px; padding: 15px; margin: 20px 0; border: 1.5px solid #00f2fe;">
+                <div style="font-size: 0.85rem; color: #94a3b8;">TAHAP PENGUASAAN (TP)</div>
+                <div id="final-tp-badge" style="font-size: 1.8rem; font-weight: bold; color: #ffd200; margin: 8px 0;">TP 3</div>
+                <div id="final-score-text" style="font-size: 1rem;">Jumlah Skor: 0 XP</div>
+            </div>
+
+            <button type="button" class="btn-main" id="btn-restart">MAIN SEMULA 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        const questionsDB = [
+            { tp: "TP1 - Mengingat", question: "1. Bahan manakah yang perlu dikendalikan di dalam kabinet aliran laminar? [S1]", caption: "Kabinet Aliran Laminar Steril", svg: `<svg viewBox="0 0 300 100"><rect x="50" y="20" width="200" height="60" rx="8" fill="#1E293B" stroke="#00F2FE" stroke-width="2"/><text x="150" y="55" fill="#00F2FE" font-size="11" text-anchor="middle">Kabinet Aliran Laminar Steril</text></svg>`, options: ["Kultur mikroorganisma", "Bahan radioaktif", "Gas bromin", "Etanol"], answer: 0, hint: "Mencegah pencemaran mikroorganisma." },
+            { tp: "TP1 - Mengingat", question: "2. Rajah 1 menunjukkan pemadam AIR dan SERBUK ABC. Bahan manakah yang boleh dipadam oleh kedua-duanya? [S2]", caption: "Pemadam Api Air & Serbuk ABC", svg: `<svg viewBox="0 0 300 100"><rect x="60" y="20" width="35" height="60" fill="#EF4444"/><rect x="120" y="20" width="35" height="60" fill="#EF4444"/><text x="220" y="55" fill="#FFD200" font-weight="bold">Kayu (Pepejal)</text></svg>`, options: ["Kayu api / Bahan Pepejal", "Minyak Diesel", "Logam Natrium", "Gas Memasak"], answer: 0, hint: "Air hanya untuk bahan pepejal Kelas A." },
+            { tp: "TP2 - Memahami", question: "3. Situasi mangsa lemas dan tidak sedarkan diri. Apakah bantuan kecemasan yang diperlukan? [S3]", caption: "Kecemasan Mangsa Lemas", svg: `<svg viewBox="0 0 300 90"><path d="M 20 60 Q 150 40 280 60" stroke="#00F2FE" stroke-width="3" fill="none"/><text x="150" y="45" fill="#FFF" font-weight="bold" text-anchor="middle">CPR</text></svg>`, options: ["Tekanan dada sahaja", "Heimlich Manoeuvre", "Pengukuran tekanan darah", "Resusitasi kardiopulmanari (CPR)"], answer: 3, hint: "CPR menggabungkan nafas bantuan & tekanan dada." },
+            { tp: "TP3 - Mengaplikasi", question: "4. BMI Izzati ialah 31.2 (Obes). Apakah tindakan Izzati? [S4]", caption: "BMI Izzati (Obes)", svg: `<svg viewBox="0 0 300 90"><rect x="80" y="20" width="140" height="50" rx="8" fill="#1E293B" stroke="#FF007F"/><text x="150" y="50" fill="#FF007F" font-weight="bold" text-anchor="middle">BMI Obes (31.2)</text></svg>`, options: ["Raju berisiko berlebihan jisim", "Izzati berisiko kurang jisim", "Raju perlu makan mengikut waktu", "Izzati perlu mengubah corak pemakanan"], answer: 3, hint: "Gaya pemakanan perlu diubah jika BMI > 30." },
+            { tp: "TP2 - Memahami", question: "5. Apakah kesan jika tapak pelupusan sampah tidak diuruskan? [S5]", caption: "Tapak Pelupusan Sampah", svg: `<svg viewBox="0 0 300 90"><path d="M 50 70 Q 150 20 250 70 Z" fill="#78350F"/><text x="150" y="40" fill="#FFD200" font-weight="bold" text-anchor="middle">Gas Metana</text></svg>`, options: ["Banjir besar", "Menjejaskan sungai", "Perubahan iklim", "Peningkatan gas rumah hijau"], answer: 3, hint: "Pembusukan sampah membebaskan gas Metana." },
+            { tp: "TP1 - Mengingat", question: "6. Aplikasi Teknologi Hijau dalam sektor pertanian dan perhutanan? [S6]", caption: "Sektor Perhutanan", svg: `<svg viewBox="0 0 300 90"><polygon points="150,20 110,70 190,70" fill="#22C55E"/><text x="150" y="85" fill="#00E676" font-size="10" text-anchor="middle">Hutan Simpan</text></svg>`, options: ["Amalkan 5R", "Pengasingan sisa", "Mewartakan kawasan hutan simpan", "Baja organik berlebihan"], answer: 2, hint: "Hutan simpan memelihara pokok dan ekosistem." },
+            { tp: "TP1 - Mengingat", question: "7. Struktur heliks ganda dua dalam sel badan manusia? [S7]", caption: "Heliks Ganda Dua", svg: `<svg viewBox="0 0 300 90"><path d="M 80 20 Q 150 70 220 20 M 80 70 Q 150 20 220 70" stroke="#00F2FE" stroke-width="3" fill="none"/></svg>`, options: ["Kromosom", "Kariotip", "Nukleus sel", "Asid deoksiribonukleik (DNA)"], answer: 3, hint: "Molekul tangga berpilin ialah DNA." },
+            { tp: "TP2 - Memahami", question: "8. Apakah contoh lain bagi variasi tak selanjar? [S8]", caption: "Variasi Tak Selanjar", svg: `<svg viewBox="0 0 300 80"><circle cx="80" cy="40" r="18" fill="#EF4444"/><circle cx="130" cy="40" r="18" fill="#3B82F6"/><circle cx="180" cy="40" r="18" fill="#10B981"/><circle cx="230" cy="40" r="18" fill="#F59E0B"/></svg>`, options: ["Berat badan", "Ketinggian", "Kumpulan darah", "Warna kulit"], answer: 2, hint: "Sifat kualitatif diskret seperti kumpulan darah A, B, AB, O." },
+            { tp: "TP2 - Memahami", question: "9. Carta DNA Rekombinan: Potong DNA -> J -> Masuk Bakteria. Apakah J? [S9]", caption: "DNA Rekombinan", svg: `<svg viewBox="0 0 300 80"><rect x="110" y="25" width="80" height="35" rx="6" fill="#FF007F"/><text x="150" y="47" fill="#FFF" font-weight="bold" text-anchor="middle">J</text></svg>`, options: ["Penggabungan gen", "Pemotongan DNA plasmid", "Pertukaran bahan genetik", "Pengekstrakan insulin"], answer: 0, hint: "Gabungkan gen insulin dengan plasmid." },
+            { tp: "TP1 - Mengingat", question: "10. Apakah fungsi K (ligamen) pada sendi siku manusia? [S10]", caption: "Sendi Siku", svg: `<svg viewBox="0 0 300 80"><rect x="100" y="20" width="20" height="40" fill="#94A3B8"/><rect x="125" y="40" width="50" height="20" fill="#94A3B8"/><line x1="110" y1="35" x2="135" y2="45" stroke="#FF007F" stroke-width="4"/></svg>`, options: ["Melindungi sendi", "Mengikat dan memaut dua tulang", "Menjana tenaga otot", "Melicinkan rawan"], answer: 1, hint: "Ligamen memaut dua tulang bersama." },
+            { tp: "TP1 - Mengingat", question: "11. Apakah hormon yang dirembeskan kelenjar L di atas ginjal? [S11]", caption: "Kelenjar Adrenal", svg: `<svg viewBox="0 0 300 80"><path d="M 130 30 C 110 20, 110 70, 130 75 C 150 70, 150 30, 130 30 Z" fill="#EF4444"/><polygon points="120,25 140,25 130,15" fill="#FFD200"/></svg>`, options: ["Insulin", "Adrenalina", "Testosteron", "Hormon antidiuresis"], answer: 1, hint: "Kelenjar Adrenal merembes Adrenalina." },
+            { tp: "TP3 - Mengaplikasi", question: "12. Graf kes dadah bertambah dari 2020 hingga 2024. Kesimpulan yang BENAR? [S12]", caption: "Graf Kes Dadah", svg: `<svg viewBox="0 0 300 80"><rect x="60" y="50" width="20" height="25" fill="#FF007F"/><rect x="100" y="30" width="20" height="45" fill="#FF007F"/><rect x="140" y="10" width="20" height="65" fill="#FF007F"/></svg>`, options: ["Peningkatan seragam", "Kempen gagal sepenuhnya", "Pertambahan 2020-2021 rendah", "Kempen kurang berkesan & dipengaruhi rakan sebaya"], answer: 3, hint: "Faktor luaran seperti rakan sebaya mempengaruhi." },
+            { tp: "TP1 - Mengingat", question: "13. 'Zarah paling kecil di dalam suatu unsur'. Apakah M? [S13]", caption: "Zarah Asas", svg: `<svg viewBox="0 0 300 80"><circle cx="150" cy="40" r="20" fill="#00F2FE"/></svg>`, options: ["Ion", "Atom", "Nukleus", "Molekul"], answer: 1, hint: "Atom ialah zarah paling asas." },
+            { tp: "TP2 - Memahami", question: "14. Simbol Natrium (Na 11, 23). Apakah susunan elektron Na? [S14]", caption: "Petala Elektron Na", svg: `<svg viewBox="0 0 300 80"><circle cx="150" cy="40" r="8" fill="#EF4444"/><circle cx="150" cy="40" r="20" stroke="#FFF" fill="none"/><circle cx="150" cy="40" r="32" stroke="#FFD200" fill="none"/></svg>`, options: ["2.8", "2.9", "2.8.1", "2.8.8.5"], answer: 2, hint: "11 elektron = 2 di petala 1, 8 di petala 2, 1 di petala 3." },
+            { tp: "TP1 - Mengingat", question: "15. Kaca P: Silika + Kalsium Karbonat + Natrium Karbonat. Apakah P? [S15]", caption: "Jenis Kaca", svg: `<svg viewBox="0 0 300 80"><polygon points="120,20 180,20 170,60 130,60" fill="#00F2FE" opacity="0.6"/></svg>`, options: ["Kaca plumbum", "Kaca borosilikat", "Kaca silika terlakur", "Kaca soda kapur"], answer: 3, hint: "Soda + Kapur + Silika." },
+            { tp: "TP2 - Memahami", question: "16. Pengumpalan lateks apabila asid ditambah. Apakah ion dan keadaannya? [S16]", caption: "Lateks", svg: `<svg viewBox="0 0 300 80"><circle cx="120" cy="40" r="15" fill="#FFF" stroke="#FF007F"/><circle cx="180" cy="40" r="15" fill="#FFF" stroke="#FF007F"/></svg>`, options: ["Ion hidroksida; menarik", "Ion hidrogen; menarik", "Ion hidroksida; berlanggar", "Ion hidrogen; molekul berlanggar"], answer: 3, hint: "Ion hidrogen menetralkan cas negatif lateks." },
+            { tp: "TP1 - Mengingat", question: "17. Pernyataan yang benar tentang perubatan moden Penisilin? [S17]", caption: "Penisilin", svg: `<svg viewBox="0 0 300 80"><rect x="110" y="25" width="80" height="30" rx="15" fill="#3B82F6"/></svg>`, options: ["Keberkesanan perlahan", "Pandangan tradisional", "Bahan semula jadi sahaja", "Pembuktian secara klinikal"], answer: 3, hint: "Perubatan moden diuji secara klinikal." },
+            { tp: "TP3 - Mengaplikasi", question: "18. Laluan E-F (60km), F-G (120km), G-H (60km). Sesaran E-H = 180km. Pernyataan BENAR? [S18]", caption: "Laluan Kereta", svg: `<svg viewBox="0 0 300 80"><polyline points="50,60 50,20 250,20 250,60" stroke="#FF007F" fill="none"/></svg>`, options: ["Jarak E ke G = 240km", "Laju purata = 110km/j", "Halaju = 60km/j", "Sesaran dari E ke H ialah 180 km"], answer: 3, hint: "Sesaran ialah garis lurus terpendek." },
+            { tp: "TP2 - Memahami", question: "19. Graf sesaran-masa: Berapakah sesaran pada t = 8 saat? [S19]", caption: "Graf Sesaran-Masa", svg: `<svg viewBox="0 0 300 80"><polyline points="40,60 100,20 200,20" stroke="#00F2FE" fill="none"/></svg>`, options: ["6 m", "8 m", "12 m", "14 m"], answer: 0, hint: "Lihat nilai paksi sesaran pada masa 8s." },
+            { tp: "TP2 - Memahami", question: "20. Murid main bola keranjang. Graf manakah mewakili pecutan graviti bola? [S20]", caption: "Pecutan Graviti", svg: `<svg viewBox="0 0 300 80"><line x1="50" y1="40" x2="250" y2="40" stroke="#00E676" stroke-width="3"/></svg>`, options: ["Bertambah secara lurus", "Sesaran bertambah lurus", "Sesaran berkurang lurus", "Pecutan adalah malar (Garis Lurus Mendatar)"], answer: 3, hint: "Pecutan graviti adalah malar (9.81 m/s²)." },
+            { tp: "TP1 - Mengingat", question: "21. Deuterium + Tritium -> Helium + Neutron + Tenaga. Apakah tindak balas ini? [S21]", caption: "Tindak Balas Nuklear", svg: `<svg viewBox="0 0 300 80"><circle cx="80" cy="40" r="12" fill="#3B82F6"/><circle cx="160" cy="40" r="16" fill="#EF4444"/></svg>`, options: ["Pereputan nukleus", "Pelakuran nukleus", "Pembelahan nukleus", "Penambahan nukleus"], answer: 1, hint: "Percantuman nukleus ringan = Pelakuran." },
+            { tp: "TP1 - Mengingat", question: "22. Antara mikroorganisma berikut, yang manakah tergolong dalam Protozoa? [S22]", caption: "Protozoa", svg: `<svg viewBox="0 0 300 80"><path d="M 120 20 Q 180 20 180 60 Z" fill="#10B981"/></svg>`, options: ["Amoeba", "Mukor", "Spirogyra", "Yis"], answer: 0, hint: "Amoeba / Paramecium ialah Protozoa." },
+            { tp: "TP3 - Mengaplikasi", question: "23. Firman ( roti 120g, mentega 20g, daging 200g ). Siapakah paling berisiko Obesiti? [S23]", caption: "Pengiraan Kalori", svg: `<svg viewBox="0 0 300 80"><rect x="80" y="20" width="140" height="40" fill="#1E293B" stroke="#FF3D00"/></svg>`, options: ["Firman", "Firdaus", "Izzul", "Ayden"], answer: 0, hint: "Firman mengambil kalori paling tinggi." },
+            { tp: "TP1 - Mengingat", question: "24. Kitar Nitrogen: Ion Nitrat -> M -> Gas Nitrogen. Apakah M? [S24]", caption: "Kitar Nitrogen", svg: `<svg viewBox="0 0 300 80"><text x="150" y="45" fill="#FFD200" text-anchor="middle">Bakteria M</text></svg>`, options: ["Pengikat nitrogen", "Pendenitritan", "Penitritan", "Pengurai"], answer: 1, hint: "Bakteria pendenitritan menukar nitrat ke gas N2." },
+            { tp: "TP2 - Memahami", question: "25. Penyengat bertelur dalam telur rama-rama. Kesan kawalan biologi ini? [S25]", caption: "Kawalan Biologi", svg: `<svg viewBox="0 0 300 80"><text x="150" y="45" fill="#00E676" text-anchor="middle">Larva Berkurang</text></svg>`, options: ["Populasi rama-rama naik", "Meningkatkan kualiti baka", "Hasil tanaman meningkat kerana larva berkurang", "Kesuburan terjejas"], answer: 2, hint: "Populasi ulat perosak berkurang." },
+            { tp: "TP1 - Mengingat", question: "26. Pemprosesan makanan yang sesuai untuk menghasilkan Tempe? [S26]", caption: "Tempe", svg: `<svg viewBox="0 0 300 80"><rect x="110" y="20" width="80" height="40" fill="#FFF"/></svg>`, options: ["Penapaian", "Pengetinan", "Pempasteuran", "Penyejukbekuan"], answer: 0, hint: "Tempe menggunakan proses Penapaian." },
+            { tp: "TP2 - Memahami", question: "27. Indeks Pencemaran Udara (IPU): P=40, Q=80, R=64, S=120. Pernyataan BENAR? [S27]", caption: "IPU Daerah S", svg: `<svg viewBox="0 0 300 80"><rect x="200" y="10" width="25" height="60" fill="#EF4444"/></svg>`, options: ["Kenderaan tinggi di P", "Tiada industri di Q", "Pokok banyak di R", "Penyakit pernafasan tinggi di daerah S"], answer: 3, hint: "IPU 120 (S) bermaksud udara paling tercemar." },
+            { tp: "TP2 - Memahami", question: "28. Serbuk Zink + Asid Cair. Cara meningkatkan kadar tindak balas? [S28]", caption: "Kadar Tindak Balas", svg: `<svg viewBox="0 0 300 80"><path d="M 130 20 L 130 60 Q 150 70 170 60 L 170 20" stroke="#FFF" fill="none"/></svg>`, options: ["Tambah jisim zink", "Tingkatkan saiz zink", "Tambah air", "Meningkatkan kepekatan asid hidroklorik"], answer: 3, hint: "Kepekatan asid tinggi meningkatkan kadar perlanggaran." },
+            { tp: "TP2 - Memahami", question: "29. Mengapa sulfur dioksida dialirkan melalui Vanadium(V) oksida? [S29]", caption: "Pemangkin", svg: `<svg viewBox="0 0 300 80"><rect x="100" y="20" width="100" height="40" fill="#334155"/></svg>`, options: ["Memendekkan masa tindak balas", "Meningkatkan kuantiti asid", "Menjimatkan gas", "Menambah kepekatan"], answer: 0, hint: "Pemangkin memendekkan masa tindak balas." },
+            { tp: "TP2 - Memahami", question: "30. Menara penyulingan petroleum: J(30-80°C), K(80-150°C), L(150-230°C). Pernyataan BENAR? [S30]", caption: "Penyulingan Petroleum", svg: `<svg viewBox="0 0 300 80"><rect x="130" y="10" width="40" height="60" fill="#1E293B" stroke="#00F2FE"/></svg>`, options: ["J takat lebur rendah", "K ialah bitumin", "L lebih likat berbanding K", "M nyalaan biru tanpa jelaga"], answer: 2, hint: "Suhu lebih tinggi menghasilkan cecair lebih likat." },
+            { tp: "TP1 - Mengingat", question: "31. Glukosa + Yis menghasilkan gas memkeruhkan air kapur. Proses ini? [S31]", caption: "Penapaian", svg: `<svg viewBox="0 0 300 80"><polygon points="120,60 180,60 150,20" stroke="#FFF" fill="none"/></svg>`, options: ["Pengesteran", "Penapaian", "Penyulingan", "Pengoksidaan"], answer: 1, hint: "Yis + Glukosa = Penapaian." },
+            { tp: "TP3 - Mengaplikasi", question: "32. Arteri sempit akibat enapan kolesterol. Langkah pencegahan? [S32]", caption: "Arteri Sempit", svg: `<svg viewBox="0 0 300 80"><circle cx="150" cy="40" r="25" fill="#EF4444"/><circle cx="150" cy="40" r="8" fill="#0B071E"/></svg>`, options: ["Kurangkan manis", "Menggunakan minyak sawit untuk menggoreng", "Makanan rendah perisa", "Ganti minyak sawit dengan mentega"], answer: 1, hint: "Minyak sawit bebas daripada kolesterol." },
+            { tp: "TP1 - Mengingat", question: "33. Stim dialirkan melalui buah kelapa sawit. Apakah tujuan ini? [S33]", caption: "Penstiman Sawit", svg: `<svg viewBox="0 0 300 80"><rect x="110" y="20" width="80" height="40" fill="#1E293B" stroke="#10B981"/></svg>`, options: ["Mengasingkan sabut", "Melunturkan warna", "Membunuh bakteria dan kulat", "Menghilangkan bau"], answer: 2, hint: "Penstiman membunuh mikroorganisma dan enzim." },
+            { tp: "TP1 - Mengingat", question: "34. Siri elektrokimia: Na+, Ca2+, Ion X, Al3+, Zn2+. Apakah Ion X? [S34]", caption: "Siri Elektrokimia", svg: `<svg viewBox="0 0 300 80"><text x="150" y="45" fill="#FFD200" text-anchor="middle">Mg2+</text></svg>`, options: ["Ion kalium", "Ion ferum(II)", "Ion magnesium", "Ion plumbum(II)"], answer: 2, hint: "Mg2+ berada di antara Ca2+ dan Al3+." },
+            { tp: "TP2 - Memahami", question: "35. Bahan manakah boleh menjadi elektrolit dalam sel kimia buah? [S35]", caption: "Sel Buah", svg: `<svg viewBox="0 0 300 80"><ellipse cx="150" cy="40" rx="35" ry="20" fill="#FACC15"/></svg>`, options: ["Etanol", "Buah lemon", "Minyak masak", "Larutan glukosa"], answer: 1, hint: "Asid sitrik dalam buah lemon bertindak sebagai elektrolit." },
+            { tp: "TP2 - Memahami", question: "36. Rajah sinar kanta cembung. Bahagian mewakili jarak imej (A)? [S36]", caption: "Kanta Cembung", svg: `<svg viewBox="0 0 300 80"><ellipse cx="150" cy="40" rx="6" ry="30" fill="#00F2FE"/></svg>`, options: ["A", "B", "C", "D"], answer: 0, hint: "A ialah jarak dari kanta ke kedudukan imej." },
+            { tp: "TP1 - Mengingat", question: "37. Komponen mikroskop. Yang manakah kanta mata? [S37]", caption: "Mikroskop", svg: `<svg viewBox="0 0 300 80"><rect x="140" y="10" width="20" height="20" fill="#00F2FE"/></svg>`, options: ["A", "B", "C", "D"], answer: 0, hint: "Bahagian teratas tiub ialah kanta mata." },
+            { tp: "TP2 - Memahami", question: "38. Tiub Venturi (K luas, L sempit, M luas). Pernyataan BENAR? [S38]", caption: "Tiub Venturi", svg: `<svg viewBox="0 0 300 80"><path d="M 60 50 L 120 50 L 140 65 L 180 65 L 200 50 L 240 50" stroke="#FFF" fill="none"/></svg>`, options: ["Tekanan di K paling rendah", "Aras air M paling rendah", "L paling perlahan", "Aras air M di antara K dan L"], answer: 3, hint: "Aras air M berada di pertengahan aras K dan L." },
+            { tp: "TP1 - Mengingat", question: "39. Satelit dengan ketinggian orbit 35 786 km di khatulistiwa? [S39]", caption: "Orbit GEO", svg: `<svg viewBox="0 0 300 80"><circle cx="150" cy="40" r="15" fill="#3B82F6"/></svg>`, options: ["Orbit Geopegun", "Orbit Sederhana", "Orbit Tinggi", "Orbit Rendah"], answer: 0, hint: "Ketinggian 35 786 km ialah Orbit Geopegun (GEO)." },
+            { tp: "TP2 - Memahami", question: "40. GPS: -22.970722, -43.182365. Apakah maksud tanda negatif? [S40]", caption: "Koordinat GPS", svg: `<svg viewBox="0 0 300 80"><circle cx="150" cy="40" r="25" fill="none" stroke="#FFF"/></svg>`, options: ["Utara, Barat", "Utara, Timur", "Latitud hemisfera selatan, longitud barat", "Selatan, Timur"], answer: 2, hint: "Negatif = Hemisfera Selatan & Barat Garisan Greenwich." }
+        ];
+
+        let playerName = "Hero Sains";
+        let currentQIndex = 0;
+        let score = 0;
+        let lives = 5;
+
+        // BIND EVENT LISTENERS (DILAKSANAKAN SELEPAS PAGE LOADED UNTUK LEPAS SEKATAN BROWSER)
+        window.addEventListener('DOMContentLoaded', function() {
+            const btnStart = document.getElementById('btn-start-game');
+            const btnHint = document.getElementById('btn-hint');
+            const btnRestart = document.getElementById('btn-restart');
+
+            if (btnStart) {
+                btnStart.addEventListener('click', function() {
+                    const nameInput = document.getElementById('player-name').value.trim();
+                    if (nameInput !== "") playerName = nameInput;
+
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('game-screen').style.display = 'block';
+                    document.getElementById('result-screen').style.display = 'none';
+
+                    document.getElementById('hud-name').innerText = playerName;
+
+                    currentQIndex = 0;
+                    score = 0;
+                    lives = 5;
+
+                    updateHUD();
+                    loadQuestion();
+                });
+            }
+
+            if (btnHint) {
+                btnHint.addEventListener('click', function() {
+                    const hintBox = document.getElementById('hint-box');
+                    hintBox.style.display = (hintBox.style.display === 'block') ? 'none' : 'block';
+                });
+            }
+
+            if (btnRestart) {
+                btnRestart.addEventListener('click', function() {
+                    document.getElementById('result-screen').style.display = 'none';
+                    document.getElementById('login-screen').style.display = 'block';
+                });
+            }
+        });
+
+        function updateHUD() {
+            document.getElementById('hud-score').innerText = score;
+            document.getElementById('hud-lives').innerText = lives;
+
+            const pct = (currentQIndex / questionsDB.length) * 100;
+            document.getElementById('progress-fill').style.width = pct + "%";
+            document.getElementById('question-count').innerText = "Soalan " + (currentQIndex + 1) + " / " + questionsDB.length;
+        }
+
+        function loadQuestion() {
+            document.getElementById('hint-box').style.display = 'none';
+            const q = questionsDB[currentQIndex];
+
+            document.getElementById('tp-tag').innerText = q.tp;
+            document.getElementById('tp-level-indicator').innerText = "Tahap: " + q.tp;
+            document.getElementById('question-text').innerText = q.question;
+            document.getElementById('svg-content').innerHTML = q.svg;
+            document.getElementById('graphic-caption').innerText = q.caption;
+            document.getElementById('hint-text').innerText = q.hint;
+
+            const optsContainer = document.getElementById('options-container');
+            optsContainer.innerHTML = "";
+
+            const letters = ["A", "B", "C", "D"];
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = "btn-opt";
+                btn.onclick = function() { checkAnswer(index, btn); };
+                btn.innerHTML = `<div class="opt-num">${letters[index]}</div><div>${opt}</div>`;
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const q = questionsDB[currentQIndex];
+            const allBtns = document.querySelectorAll('.btn-opt');
+            
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            if (selectedIndex === q.answer) {
+                btnElement.classList.add('correct');
+                score += 100;
+            } else {
+                btnElement.classList.add('wrong');
+                if (allBtns[q.answer]) allBtns[q.answer].classList.add('correct');
+                lives -= 1;
+            }
+
+            updateHUD();
+
+            setTimeout(function() {
+                if (lives <= 0 || currentQIndex >= questionsDB.length - 1) {
+                    showResults();
+                } else {
+                    currentQIndex++;
+                    updateHUD();
+                    loadQuestion();
+                }
+            }, 1200);
+        }
+
+        function showResults() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            document.getElementById('result-name').innerText = playerName;
+            document.getElementById('final-score-text').innerText = "Jumlah Skor: " + score + " XP (" + (currentQIndex + 1) + " Soalan Selesai)";
+
+            let tpLevel = "TP 1";
+            if (score >= 3200) tpLevel = "TP 3 (CEMERLANG)";
+            else if (score >= 2000) tpLevel = "TP 2 (MEMUASKAN)";
+
+            document.getElementById('final-tp-badge').innerText = tpLevel;
+        }
+    </script>
+</body>
+</html>
